@@ -4,14 +4,15 @@
 #include <iostream>
 #include <vector>
 #include <utility> // 引入utility库以使用std::pair
+#include <filesystem>
 #include "image.h"
 #include "stb_image.h"
 #include "line.h"
 #include "threadpool.h"
 #include "timer.h"
-
+namespace fs = std::filesystem;
 using namespace primitive;
-
+const int try_number = 10000;
 std::pair<int, int> PickTwoUniqueNumbers()
 {
     int first = rand() % 4; // 生成1到4之间的随机数作为第一个数字
@@ -81,43 +82,61 @@ std::vector<int> generatePositions(int width, int height)
     return positions;
 }
 
+double MinEnergy(const RasterizedLines* lines, const unsigned char* grayImage, int width, int height, int workerId)
+{
+    double min_energy = INFINITY;
+    for (auto i = 0; i < try_number; i++) {
+        srand(workerId * try_number + i);
+        auto positions = generatePositions(width, height);
+        Line l(positions);
+        RasterizedLines lines = l.Rasterize();
+        lines.r = rand() % 256;
+        lines.g = rand() % 256;
+        lines.b = rand() % 256;
+        auto result = Energy(&lines, grayImage, width, height);
+        if (result < min_energy) {
+            min_energy = result;
+        }
+    }
+    return min_energy;
+}
+
 int main()
 {
-    const char* imagePath = "../images/starrynight.jpg";
+    fs::path p = fs::current_path();
+    std::cout << "Current path is " << p << std::endl;
+    std::string pathStr = p.string();
+    auto pos = pathStr.find("primitive");
+    auto project_path = fs::path(pathStr.substr(0, pos + std::string("primitive").length()));
+    auto imagePath = project_path.append("images").append("starrynight.jpg");
     int width, height, nChannels;
     // stbi_set_flip_vertically_on_load(1);
-    unsigned char* imageData = stbi_load(imagePath, &width, &height, &nChannels, 0);
+    unsigned char* imageData = stbi_load(imagePath.string().c_str(), &width, &height, &nChannels, 0);
 
     printf("width: %d, height: %d, nrComponents: %d\n", width, height, nChannels);
     auto grayImage = rgb2grayMerged(imageData, width, height);
     Line l(145, 0, 0, 34);
     RasterizedLines lines = l.Rasterize();
-    const int try_number = 10000;
     // Display(&lines);
     ThreadPool pool(6);
     // enqueue and store future
     {
         std::cout << "Using ThreadPool" << std::endl;
         Timer _;
-        for (auto i = 0; i < try_number; i++) {
-            srand(i);
-            auto positions = generatePositions(width, height);
-            // std::cout << positions[0] << " " << positions[1] << " " << positions[2] << " " << positions[3]  << std::endl;
-            Line l(positions);
-            RasterizedLines lines = l.Rasterize();
-            lines.r = rand() % 256;
-            lines.g = rand() % 256;
-            lines.b = rand() % 256;
-            auto result = pool.enqueue(Energy, &lines, grayImage, width, height);
+        std::vector<std::future<double>> results;
+        for (auto i = 0; i < 6; i++) {
+            auto result = pool.enqueue(MinEnergy, &lines, grayImage, width, height, i);
+            results.push_back(std::move(result));
+        }
+        for (auto& result : results) {
             auto energy = result.get();
-
-            // std::cout << "energy: " << energy << std::endl;
+            std::cout << "energy: " << energy << std::endl;
         }
     }
     {
         std::cout << "Not using ThreadPool" << std::endl;
         Timer _;
-        for (auto i = 0; i < try_number; i++) {
+        for (auto i = 0; i < 6 * try_number; i++) {
             srand(i);
 
             auto positions = generatePositions(width, height);
