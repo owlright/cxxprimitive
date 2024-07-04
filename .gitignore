@@ -1,0 +1,14 @@
+.vscode/
+.idea/
+bin/
+cmake-build/
+cmake-build-*/
+Debug/
+Release/
+# Xmake cache
+.xmake/
+build/
+
+# MacOS Cache
+.DS_Store
+.vs/
