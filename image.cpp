@@ -18,6 +18,7 @@ void rgb2gray(unsigned char* data, int width, int height)
 }
 unsigned char* rgb2grayMerged(unsigned char* data, int width, int height)
 {
+    assert(data != nullptr && width > 0 && height > 0);
     unsigned char* gray_data = (unsigned char*)malloc(width * height);
     for (int i = 0; i < width * height; i++) {
         unsigned char r = data[i * 3];
