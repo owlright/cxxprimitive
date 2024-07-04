@@ -1,3 +1,4 @@
 *.png filter=lfs diff=lfs merge=lfs -text
 *.rc text
 *.xpm text
+*.jpg filter=lfs diff=lfs merge=lfs -text
