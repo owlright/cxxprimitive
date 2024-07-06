@@ -36,7 +36,7 @@ double Energy(const RasterizedLines* lines, const unsigned char* grayImage, int 
     return sqrt(energy);
 }
 
-std::vector<int> generatePositions(int width, int height)
+std::vector<int> GeneratePositions(int width, int height)
 {
     auto [first, second] = PickTwoUniqueNumbers();
 
@@ -87,7 +87,7 @@ double MinEnergy(const RasterizedLines* lines, const unsigned char* grayImage, i
     double min_energy = INFINITY;
     for (auto i = 0; i < try_number; i++) {
         srand(workerId * try_number + i);
-        auto positions = generatePositions(width, height);
+        auto positions = GeneratePositions(width, height);
         Line l(positions);
         RasterizedLines lines = l.Rasterize();
         lines.r = rand() % 256;
@@ -139,7 +139,7 @@ int main()
         for (auto i = 0; i < 6 * try_number; i++) {
             srand(i);
 
-            auto positions = generatePositions(width, height);
+            auto positions = GeneratePositions(width, height);
 
             Line l(positions);
             RasterizedLines lines = l.Rasterize();
