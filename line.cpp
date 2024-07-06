@@ -161,4 +161,9 @@ void Line::RasterizeLineHigh(int x0, int y0, int x1, int y1, std::vector<Scanlin
     }
 }
 
+std::ostream& operator<<(std::ostream& os, const Line& line) {
+    os << "Line: (" << line.x1 << ", " << line.y1 << ") to (" << line.x2 << ", " << line.y2 << ")";
+    return os;
+}
+
 }
