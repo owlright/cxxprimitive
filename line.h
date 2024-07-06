@@ -4,6 +4,7 @@
 #include "shape.h"
 #include <vector>
 namespace primitive {
+using std::vector;
 class Line : public IShape {
 private:
     int x1, y1;
@@ -16,8 +17,8 @@ public:
     RasterizedLines Rasterize() const override;
 
 private:
-    void RasterizeLineLow(int x0, int y0, int x1, int y1, Scanline* lines) const;
-    void RasterizeLineHigh(int x0, int y0, int x1, int y1, Scanline* lines) const;
+    void RasterizeLineLow(int x0, int y0, int x1, int y1, vector<Scanline>& lines) const;
+    void RasterizeLineHigh(int x0, int y0, int x1, int y1, vector<Scanline>& lines) const;
 };
 }
 

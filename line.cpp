@@ -32,7 +32,7 @@ Line::Line(int x[4])
     this->y2 = x[3];
 }
 
-Line::Line(std::vector<int> x)
+Line::Line(vector<int> x)
 {
     assert(x[0] >= 0 && x[1] >= 0 && x[2] >= 0 && x[3] >= 0);
     assert(!(x[0] == x[2] && x[1] == x[3]));
@@ -48,11 +48,10 @@ RasterizedLines Line::Rasterize() const
     int dy = y2 - y1;
     log_debug("dx: %d, dy: %d", dx, dy);
 
-    Scanline* lines = (Scanline*)calloc(abs(dy) + 1, sizeof(Scanline));
-    for (int i = 0; i <= abs(dy); i++) {
-        lines[i].left = -1;
-    }
     RasterizedLines result;
+    // Scanline* lines = (Scanline*)calloc(abs(dy) + 1, sizeof(Scanline));
+    std::vector<Scanline> lines(abs(dy) + 1);
+
     // ! Special case for vertical lines and horizontal lines
     if (dx == 0) { // x1 == x2
         for (int j = 0; j <= dy; j++) {
@@ -105,7 +104,7 @@ RasterizedLines Line::Rasterize() const
 
 // ! 以下实现将grid的左上角坐标视作grid自身坐标
 // plow line slope between -1 and 1
-void Line::RasterizeLineLow(int x0, int y0, int x1, int y1, Scanline* lines) const
+void Line::RasterizeLineLow(int x0, int y0, int x1, int y1, std::vector<Scanline>& lines) const
 {
     int dx = x1 - x0;
     int dy = y1 - y0;
@@ -134,7 +133,7 @@ void Line::RasterizeLineLow(int x0, int y0, int x1, int y1, Scanline* lines) con
 }
 
 // high line slope greater than 1 or less than -1
-void Line::RasterizeLineHigh(int x0, int y0, int x1, int y1, Scanline* lines) const
+void Line::RasterizeLineHigh(int x0, int y0, int x1, int y1, std::vector<Scanline>& lines) const
 {
     int dx = x1 - x0;
     int dy = y1 - y0;

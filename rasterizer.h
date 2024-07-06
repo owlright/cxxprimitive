@@ -1,24 +1,25 @@
 #ifndef raster_h
 #define raster_h
 #include <stdint.h>
-
+#include <vector>
 typedef struct {
     int x, y;
 } Point;
 
-typedef struct {
-    int y, left, right;
+typedef struct Scanline_ {
+    int y = -1;
+    int left = -1;
+    int right = -1;
     uint32_t alpha;
 } Scanline;
 
 typedef struct {
-    Scanline* lines;
+    std::vector<Scanline> lines;
     int h;
     unsigned char r;
     unsigned char g;
     unsigned char b;
 } RasterizedLines;
 
-void DestroyRasterizedLines(RasterizedLines* obj);
 void Display(RasterizedLines* obj);
 #endif

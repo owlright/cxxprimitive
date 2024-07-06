@@ -1,10 +1,6 @@
 #include <stdlib.h>
 #include "rasterizer.h"
 #include <stdio.h>
-void DestroyRasterizedLines(RasterizedLines* lines)
-{
-    free(lines->lines);
-}
 
 void Display(RasterizedLines* obj)
 {
