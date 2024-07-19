@@ -16,9 +16,6 @@ typedef struct Scanline_ {
 typedef struct {
     std::vector<Scanline> lines;
     int h;
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
 } RasterizedLines;
 
 void Display(RasterizedLines* obj);
