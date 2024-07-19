@@ -10,11 +10,14 @@ class Line : public IShape {
 private:
     int x1, y1;
     int x2, y2;
+public:
+    unsigned char r, g, b;
 
 public:
     Line()
     {
         x1 = y1 = x2 = y2 = -1;
+        r = g = b = 0;
     }
     explicit Line(int x1, int y1, int x2, int y2);
     explicit Line(int x[4]);
