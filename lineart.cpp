@@ -23,30 +23,39 @@ std::pair<int, int> PickTwoUniqueNumbers()
     return std::make_pair(first, second); // 返回一对不重复的数字
 }
 
-std::pair<double, unsigned char> Energy(const RasterizedLines& lines, const unsigned char* grayImage, int width, int height)
+std::pair<double, Color> Energy(const RasterizedLines& lines, const unsigned char* target, int width, int height)
 {
     double energy = 0;
-    // 计算平均值
-    double avg = 0.0;
+    // 计算这条线经过的像素颜色平均值
+    double rAvg = 0.0;
+    double gAvg = 0.0;
+    double bAvg = 0.0;
     int pixelCount = 0;
     for (int i = 0; i < lines.h; i++) {
         auto line = lines.lines[i];
         for (int x = line.left; x <= line.right; x++) {
-            avg += grayImage[line.y * width + x];
+            rAvg += target[line.y * width * 3 + x];
+            gAvg += target[line.y * width * 3 + x + 1];
+            bAvg += target[line.y * width * 3 + x + 2];
             pixelCount++;
         }
     }
-    if (pixelCount == 0) {
-        return std::make_pair(INFINITY, 255);
+    if (pixelCount == 0) { // 如果这条线没有覆盖任何像素，返回无穷大的能量
+        return std::make_pair(INFINITY, Color(255, 255, 255));
     }
-    avg /= pixelCount;
+    rAvg /= pixelCount;
+    gAvg /= pixelCount;
+    bAvg /= pixelCount;
+    // 取平均color，计算这条线和目标图像之间差值的平方和
     for (int i = 0; i < lines.h; i++) {
         auto line = lines.lines[i];
         for (int x = line.left; x <= line.right; x++) {
-            energy += pow(grayImage[line.y * width + x] - avg, 2);
+            energy += pow(target[line.y * width * 3 + x] - rAvg, 2);
+            energy += pow(target[line.y * width * 3 + x + 1] - gAvg, 2);
+            energy += pow(target[line.y * width * 3 + x + 2] - bAvg, 2);
         }
     }
-    return std::make_pair(sqrt(energy), avg);
+    return std::make_pair(sqrt(energy), Color(rAvg, gAvg, bAvg));
 }
 
 void FixEdge(int&x, int& y, const int width, const int height, int edgeId)
