@@ -12,7 +12,69 @@
 #include "timer.h"
 namespace fs = std::filesystem;
 using namespace primitive;
-const int try_number = 1000;
+const int try_number = 20000;
+
+class DrawingBoard {
+private:
+    int width { -1 };
+    int height { -1 };
+    unsigned char* targetImage;
+    unsigned char* board;
+
+    vector<Line> lines;
+
+public:
+    int getWidth() const
+    {
+        return width;
+    }
+    int getHeight() const
+    {
+        return height;
+    }
+    const unsigned char* getTargetImage() const
+    {
+        return targetImage;
+    }
+
+public:
+    explicit DrawingBoard(int width, int height, const unsigned char* target)
+        : width(width)
+        , height(height)
+        , targetImage(targetImage)
+    {
+        targetImage = (unsigned char*)malloc(width * height * 3);
+        memcpy(targetImage, target, width * height * 3);
+        board = (unsigned char*)malloc(width * height * 3);
+        memset(board, 255, width * height * 3);
+    }
+    ~DrawingBoard()
+    {
+        free(board);
+        free(targetImage);
+    }
+
+public:
+    void DrawLine(const Line& line)
+    {
+        auto lines = line.Rasterize();
+        auto color = line.color;
+        for (int i = 0; i < lines.h; i++) {
+            auto l = lines.lines[i];
+            for (int x = l.left; x <= l.right; x++) {
+                board[l.y * width * 3 + x] = color.r;
+                board[l.y * width * 3 + x + 1] = color.g;
+                board[l.y * width * 3 + x + 2] = color.b;
+                // 已经画过的线，从目标图像中减去
+                targetImage[l.y * width * 3 + x] -= color.r;
+                targetImage[l.y * width * 3 + x + 1] -= color.g;
+                targetImage[l.y * width * 3 + x + 2] -= color.b;
+            }
+        }
+        this->lines.push_back(line);
+    }
+
+};
 std::pair<int, int> PickTwoUniqueNumbers()
 {
     int first = rand() % 4; // 生成1到4之间的随机数作为第一个数字
@@ -58,22 +120,22 @@ std::pair<double, Color> Energy(const RasterizedLines& lines, const unsigned cha
     return std::make_pair(sqrt(energy), Color(rAvg, gAvg, bAvg));
 }
 
-void FixEdge(int&x, int& y, const int width, const int height, int edgeId)
+void FixEdge(int& x, int& y, const int width, const int height, int edgeId)
 {
-     switch (edgeId) {
-        case 0:
-           y = 0;
-            break;
-        case 1:
-            x = width - 1;
-            break;
-        case 2:
-            y = height - 1;
-            break;
-        case 3:
-            x = 0;
-            break;
-        }
+    switch (edgeId) {
+    case 0:
+        y = 0;
+        break;
+    case 1:
+        x = width - 1;
+        break;
+    case 2:
+        y = height - 1;
+        break;
+    case 3:
+        x = 0;
+        break;
+    }
 }
 std::vector<int> GeneratePositions(int width, int height)
 {
@@ -96,8 +158,11 @@ std::vector<int> GeneratePositions(int width, int height)
 }
 
 using OptResult = std::pair<double, Line>;
-OptResult MinEnergy(const unsigned char* grayImage, const int width, const int height, int workerId)
+
+OptResult MinEnergy(const DrawingBoard& board, int workerId)
 {
+    const int width = board.getWidth();
+    const int height = board.getHeight();
     double minEnergy = INFINITY;
     Line minLine;
     unsigned char avgBlack;
@@ -106,8 +171,8 @@ OptResult MinEnergy(const unsigned char* grayImage, const int width, const int h
         auto positions = GeneratePositions(width, height);
         Line l(positions);
         RasterizedLines lines = l.Rasterize();
-        auto [egy, color] = Energy(lines, grayImage, width, height);
-        l.r = l.g = l.b = color;
+        auto [egy, color] = Energy(lines, board.getTargetImage(), width, height);
+        l.color = color;
         if (egy < minEnergy) {
             minEnergy = egy;
             minLine = l;
@@ -130,23 +195,28 @@ int main()
     unsigned char* imageData = stbi_load(imagePath.string().c_str(), &width, &height, &nChannels, 0);
 
     printf("width: %d, height: %d, nrComponents: %d\n", width, height, nChannels);
-    auto grayImage = rgb2grayMerged(imageData, width, height);
 
     ThreadPool pool(6);
-    // enqueue and store future
+    DrawingBoard board(width, height, imageData);
     {
         Timer _;
-        std::vector<std::future<OptResult>> results;
-        // std::vector<OptResult> results;
-        for (auto i = 0; i < 6; i++) {
-            auto result = pool.enqueue(MinEnergy, grayImage, width, height, i);
-            // auto result = MinEnergy(grayImage, width, height, i);
-            results.push_back(std::move(result));
-        }
-        for (auto& result : results) {
-            auto r = result.get();
-            // auto r = result;
-            std::cout << "energy: " << r.first << " " << r.second << std::endl;
+        for (auto lc = 0; lc < 100; lc++) {
+            std::vector<std::future<OptResult>> results;
+            for (auto i = 0; i < 6; i++) {
+                auto result = pool.enqueue(MinEnergy, board, i);
+                results.push_back(std::move(result));
+            }
+            double minEnergy = INFINITY;
+            Line bestLine;
+            for (auto& result : results) {
+                auto r = result.get();
+                if (r.first < minEnergy) {
+                    minEnergy = r.first;
+                    bestLine = r.second;
+                }
+            }
+            board.DrawLine(bestLine);
+            std::cout << "energy: " << minEnergy << " " << bestLine << std::endl;
         }
     }
     // {
@@ -168,5 +238,4 @@ int main()
     // }
 
     free(imageData);
-    free(grayImage);
 }
