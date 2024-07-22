@@ -1,6 +1,7 @@
 #ifndef line_h
 #define line_h
 #include <stdlib.h>
+#include "image.h"
 #include "shape.h"
 #include <vector>
 #include <ostream>
@@ -11,13 +12,13 @@ private:
     int x1, y1;
     int x2, y2;
 public:
-    unsigned char r, g, b;
+    Color color;
 
 public:
     Line()
     {
         x1 = y1 = x2 = y2 = -1;
-        r = g = b = 0;
+        color.r = color.g = color.b = 0;
     }
     explicit Line(int x1, int y1, int x2, int y2);
     explicit Line(int x[4]);
