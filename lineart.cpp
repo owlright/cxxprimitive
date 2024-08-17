@@ -204,8 +204,8 @@ int main()
         Timer _;
         for (auto lc = 0; lc < 100; lc++) {
             std::vector<std::future<OptResult>> results;
-            for (auto i = 0; i < 6; i++) {
-                auto result = pool.enqueue(MinEnergy, board, i);
+            for (auto i = 0; i < processor_count; i++) {
+                auto result = pool.enqueue(MinEnergy, std::ref(board), i);
                 results.push_back(std::move(result));
             }
             double minEnergy = INFINITY;
