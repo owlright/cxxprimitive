@@ -7,9 +7,12 @@ if(MSVC)
     add_compile_options("/utf-8")
 endif()
 
-add_library(primitive STATIC rasterizer.cpp triangle.cpp line.cpp image.cpp)
+add_library(primitive STATIC rasterizer.cpp triangle.cpp line.cpp image.cpp drawingboard.cpp)
 
 add_subdirectory(test)
 
 add_executable(lineart lineart.cpp)
 target_link_libraries(lineart PRIVATE primitive)
+
+add_executable(testDrawLine testDrawLine.cpp)
+target_link_libraries(testDrawLine PRIVATE primitive)

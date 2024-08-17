@@ -23,7 +23,15 @@ public:
     explicit Line(int x1, int y1, int x2, int y2);
     explicit Line(int x[4]);
     explicit Line(std::vector<int> x);
+    void SetStart(int x, int y) { x1 = x; y1 = y; };
+    void SetEnd(int x, int y) { x2 = x; y2 = y; };
     RasterizedLines Rasterize() const override;
+
+public:
+    int getX1() const { return x1; }
+    int getY1() const { return y1; }
+    int getX2() const { return x2; }
+    int getY2() const { return y2; }
 
 private:
     void RasterizeLineLow(int x0, int y0, int x1, int y1, vector<Scanline>& lines) const;
