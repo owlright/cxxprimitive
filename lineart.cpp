@@ -10,71 +10,12 @@
 #include "line.h"
 #include "threadpool.h"
 #include "timer.h"
+#include "drawingboard.h"
 #include <thread>
 namespace fs = std::filesystem;
 using namespace primitive;
 const int try_number = 20000;
 
-class DrawingBoard {
-private:
-    int width { -1 };
-    int height { -1 };
-    unsigned char* targetImage;
-    unsigned char* board;
-
-    vector<Line> lines;
-
-public:
-    int getWidth() const
-    {
-        return width;
-    }
-    int getHeight() const
-    {
-        return height;
-    }
-    const unsigned char* getTargetImage() const
-    {
-        return targetImage;
-    }
-
-public:
-    explicit DrawingBoard(int width, int height, const unsigned char* target)
-        : width(width)
-        , height(height)
-        , targetImage(targetImage)
-    {
-        targetImage = (unsigned char*)malloc(width * height * 3);
-        memcpy(targetImage, target, width * height * 3);
-        board = (unsigned char*)malloc(width * height * 3);
-        memset(board, 255, width * height * 3);
-    }
-    ~DrawingBoard()
-    {
-        free(board);
-        free(targetImage);
-    }
-
-public:
-    void DrawLine(const Line& line)
-    {
-        auto lines = line.Rasterize();
-        auto color = line.color;
-        for (int i = 0; i < lines.h; i++) {
-            auto l = lines.lines[i];
-            for (int x = l.left; x <= l.right; x++) {
-                board[l.y * width * 3 + x] = color.r;
-                board[l.y * width * 3 + x + 1] = color.g;
-                board[l.y * width * 3 + x + 2] = color.b;
-                // 已经画过的线，从目标图像中减去
-                targetImage[l.y * width * 3 + x] -= color.r;
-                targetImage[l.y * width * 3 + x + 1] -= color.g;
-                targetImage[l.y * width * 3 + x + 2] -= color.b;
-            }
-        }
-        this->lines.push_back(line);
-    }
-};
 std::pair<int, int> PickTwoUniqueNumbers()
 {
     int first = rand() % 4; // 生成1到4之间的随机数作为第一个数字
