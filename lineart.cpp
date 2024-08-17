@@ -10,6 +10,7 @@
 #include "line.h"
 #include "threadpool.h"
 #include "timer.h"
+#include <thread>
 namespace fs = std::filesystem;
 using namespace primitive;
 const int try_number = 20000;
@@ -73,7 +74,6 @@ public:
         }
         this->lines.push_back(line);
     }
-
 };
 std::pair<int, int> PickTwoUniqueNumbers()
 {
@@ -196,6 +196,8 @@ int main()
 
     printf("width: %d, height: %d, nrComponents: %d\n", width, height, nChannels);
 
+    const auto processor_count = std::thread::hardware_concurrency();
+    printf("This machine has %d processors\n", processor_count);
     ThreadPool pool(6);
     DrawingBoard board(width, height, imageData);
     {
