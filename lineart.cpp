@@ -133,14 +133,15 @@ int main()
     auto imagePath = project_path.append("images").append("lenna.png");
     int width, height, nChannels;
     // stbi_set_flip_vertically_on_load(1);
-    unsigned char* imageData = stbi_load(imagePath.string().c_str(), &width, &height, &nChannels, 0);
+    std::shared_ptr<unsigned char> imageData;
+    imageData.reset(stbi_load(imagePath.string().c_str(), &width, &height, &nChannels, 0));
 
     printf("width: %d, height: %d, nrComponents: %d\n", width, height, nChannels);
 
     const auto processor_count = std::thread::hardware_concurrency();
     printf("This machine has %d processors\n", processor_count);
     ThreadPool pool(6);
-    DrawingBoard board(width, height, imageData);
+    DrawingBoard board(width, height, imageData.get());
     {
         Timer _;
         for (auto lc = 0; lc < 100; lc++) {
@@ -180,5 +181,5 @@ int main()
     //     }
     // }
 
-    free(imageData);
+//    free(imageData);
 }
