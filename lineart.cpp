@@ -41,7 +41,7 @@ std::pair<double, Color> Energy(const RasterizedLines& lines, const DrawingBoard
         for (int x = line.left; x <= line.right; x++) {
             rAvg += target[line.y * width * 3 + x] - alreadyTarget[line.y * width * 3 + x];
             gAvg += target[line.y * width * 3 + x + 1] - alreadyTarget[line.y * width * 3 + x + 1];
-            bAvg += target[line.y * width * 3 + x + 2]- alreadyTarget[line.y * width * 3 + x + 2];
+            bAvg += target[line.y * width * 3 + x + 2] - alreadyTarget[line.y * width * 3 + x + 2];
             if (rAvg > 0 || gAvg > 0 || bAvg > 0) {
                 pixelCount++;
             }
@@ -57,9 +57,9 @@ std::pair<double, Color> Energy(const RasterizedLines& lines, const DrawingBoard
     for (int i = 0; i < lines.h; i++) {
         auto line = lines.lines[i];
         for (int x = line.left; x <= line.right; x++) {
-            energy += pow(target[line.y * width * 3 + x] - rAvg, 2);
-            energy += pow(target[line.y * width * 3 + x + 1] - gAvg, 2);
-            energy += pow(target[line.y * width * 3 + x + 2] - bAvg, 2);
+            energy += pow(target[line.y * width * 3 + x] - rAvg - alreadyTarget[line.y * width * 3 + x], 2);
+            energy += pow(target[line.y * width * 3 + x + 1] - gAvg - alreadyTarget[line.y * width * 3 + x + 1], 2);
+            energy += pow(target[line.y * width * 3 + x + 2] - bAvg - alreadyTarget[line.y * width * 3 + x + 2], 2);
         }
     }
     return std::make_pair(sqrt(energy), Color(rAvg, gAvg, bAvg));
