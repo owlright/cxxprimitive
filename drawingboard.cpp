@@ -10,7 +10,7 @@ DrawingBoard::DrawingBoard(int width, int height, const unsigned char* target)
     targetImage = (unsigned char*)malloc(width * height * 3);
     memcpy(targetImage, target, width * height * 3);
     board = (unsigned char*)malloc(width * height * 3);
-    memset(board, 255, width * height * 3);
+    memset(board, 0, width * height * 3);
 }
 
 DrawingBoard::DrawingBoard(int width, int height)
@@ -18,7 +18,7 @@ DrawingBoard::DrawingBoard(int width, int height)
     , height(height)
 {
     board = (unsigned char*)malloc(width * height * 3);
-    memset(board, 255, width * height * 3);
+    memset(board, 0, width * height * 3);
 }
 
 void DrawingBoard::SetTargetImage(const unsigned char* target)
