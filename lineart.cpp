@@ -26,8 +26,10 @@ std::pair<int, int> PickTwoUniqueNumbers()
     return std::make_pair(first, second); // 返回一对不重复的数字
 }
 
-std::pair<double, Color> Energy(const RasterizedLines& lines, const unsigned char* target, int width, int height)
+std::pair<double, Color> Energy(const RasterizedLines& lines, const DrawingBoard& board, int width, int height)
 {
+    auto target = board.getTargetImage();
+    auto alreadyTarget = board.getBoard();
     double energy = 0;
     // 计算这条线经过的像素颜色平均值
     double rAvg = 0.0;
@@ -37,10 +39,12 @@ std::pair<double, Color> Energy(const RasterizedLines& lines, const unsigned cha
     for (int i = 0; i < lines.h; i++) {
         auto line = lines.lines[i];
         for (int x = line.left; x <= line.right; x++) {
-            rAvg += target[line.y * width * 3 + x];
-            gAvg += target[line.y * width * 3 + x + 1];
-            bAvg += target[line.y * width * 3 + x + 2];
-            pixelCount++;
+            rAvg += target[line.y * width * 3 + x] - alreadyTarget[line.y * width * 3 + x];
+            gAvg += target[line.y * width * 3 + x + 1] - alreadyTarget[line.y * width * 3 + x + 1];
+            bAvg += target[line.y * width * 3 + x + 2]- alreadyTarget[line.y * width * 3 + x + 2];
+            if (rAvg > 0 || gAvg > 0 || bAvg > 0) {
+                pixelCount++;
+            }
         }
     }
     if (pixelCount == 0) { // 如果这条线没有覆盖任何像素，返回无穷大的能量
@@ -112,7 +116,7 @@ OptResult MinEnergy(const DrawingBoard& board, int workerId)
         auto positions = GeneratePositions(width, height);
         Line l(positions);
         RasterizedLines lines = l.Rasterize();
-        auto [egy, color] = Energy(lines, board.getTargetImage(), width, height);
+        auto [egy, color] = Energy(lines, board, width, height);
         l.color = color;
         if (egy < minEnergy) {
             minEnergy = egy;

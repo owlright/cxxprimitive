@@ -26,6 +26,10 @@ public:
     {
         return targetImage;
     }
+    const unsigned char* getBoard() const
+    {
+        return board;
+    }
 
 public:
     explicit DrawingBoard(int width, int height, const unsigned char* target);
