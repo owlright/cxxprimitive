@@ -12,6 +12,8 @@
 #include "timer.h"
 #include "drawingboard.h"
 #include <thread>
+#include <ctime>
+
 namespace fs = std::filesystem;
 using namespace primitive;
 const int try_number = 20000;
@@ -112,7 +114,7 @@ OptResult MinEnergy(const DrawingBoard& board, int workerId)
     Line minLine;
     unsigned char avgBlack;
     for (auto i = 0; i < try_number; i++) {
-        srand(workerId * try_number + i);
+        srand(time(0));
         auto positions = GeneratePositions(width, height);
         Line l(positions);
         RasterizedLines lines = l.Rasterize();
@@ -148,7 +150,7 @@ int main()
     DrawingBoard board(width, height, imageData.get());
     {
         Timer _;
-        for (auto lc = 0; lc < 100; lc++) {
+        for (auto lc = 0; lc < 20; lc++) {
             std::vector<std::future<OptResult>> results;
             for (auto i = 0; i < processor_count; i++) {
                 auto result = pool.enqueue(MinEnergy, std::ref(board), i);
@@ -164,9 +166,10 @@ int main()
                 }
             }
             board.DrawLine(bestLine);
-            std::cout << "energy: " << minEnergy << " " << bestLine << std::endl;
+            std::cout << "Round " << lc << " Energy: " << minEnergy << " " << bestLine << std::endl;
         }
     }
+    board.SaveImage("output.png");
     // {
     //     std::cout << "Not using ThreadPool" << std::endl;
     //     Timer _;
@@ -185,5 +188,5 @@ int main()
     //     }
     // }
 
-//    free(imageData);
+    //    free(imageData);
 }
