@@ -31,6 +31,35 @@ struct Color {
         return os;
     };
 };
+
+struct Image {
+    unsigned char* data { nullptr };
+    int width { -1 };
+    int height { -1 };
+    int nChannels { -1 };
+
+    Color RGBAAt(int x, int y) const;
+
+    Image() = default;
+    Image(int width, int height);
+    Image(Color c, int width, int height);
+    Image(unsigned char* data, int width, int height, int nChannels);
+    Image(const std::string& path);
+
+    ~Image()
+    {
+        free(data);
+    }
+
+    // Copy constructor
+    Image(const Image& other);
+    // Copy assignment operator
+    Image& operator=(const Image& other);
+    // Move constructor
+    Image(Image&& other) noexcept;
+    // Move assignment operator
+    Image& operator=(Image&& other) noexcept;
+};
 void rgb2gray(unsigned char* data, int width, int height);
 unsigned char* rgb2grayMerged(unsigned char* data, int width, int height);
 
