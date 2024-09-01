@@ -60,6 +60,7 @@ struct Image {
     // Move assignment operator
     Image& operator=(Image&& other) noexcept;
 };
+Color AverageImageColor(const Image& im);
 void rgb2gray(unsigned char* data, int width, int height);
 unsigned char* rgb2grayMerged(unsigned char* data, int width, int height);
 

@@ -142,4 +142,25 @@ unsigned char* rgb2grayMerged(unsigned char* data, int width, int height)
     return gray_data;
 }
 
+Color AverageImageColor(const Image& im)
+{
+    int rAvg = 0;
+    int gAvg = 0;
+    int bAvg = 0;
+    auto w = im.width;
+    auto h = im.height;
+    for (int y = 0; y < w; y++) {
+        for (int x = 0; x < h; x++) {
+            auto color = im.RGBAAt(x, y);
+            rAvg += color.r;
+            gAvg += color.g;
+            bAvg += color.b;
+        }
+    }
+    rAvg /= w * h;
+    gAvg /= w * h;
+    bAvg /= w * h;
+    return Color(rAvg, gAvg, bAvg);
+}
+
 }
