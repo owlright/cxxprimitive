@@ -30,8 +30,8 @@ std::pair<int, int> PickTwoUniqueNumbers()
 
 std::pair<double, Color> Energy(const RasterizedLines& lines, const DrawingBoard& board, int width, int height)
 {
-    auto target = board.getTargetImage();
-    auto alreadyTarget = board.getBoard();
+    auto target = board.target;
+    auto alreadyTarget = board.current;
     double energy = 0;
     // 计算这条线经过的像素颜色平均值
     double rAvg = 0.0;
@@ -41,9 +41,9 @@ std::pair<double, Color> Energy(const RasterizedLines& lines, const DrawingBoard
     for (int i = 0; i < lines.h; i++) {
         auto line = lines.lines[i];
         for (int x = line.left; x <= line.right; x++) {
-            rAvg += target[line.y * width * 3 + x] - alreadyTarget[line.y * width * 3 + x];
-            gAvg += target[line.y * width * 3 + x + 1] - alreadyTarget[line.y * width * 3 + x + 1];
-            bAvg += target[line.y * width * 3 + x + 2] - alreadyTarget[line.y * width * 3 + x + 2];
+            rAvg += target.data[line.y * width * 3 + x] - alreadyTarget.data[line.y * width * 3 + x];
+            gAvg += target.data[line.y * width * 3 + x + 1] - alreadyTarget.data[line.y * width * 3 + x + 1];
+            bAvg += target.data[line.y * width * 3 + x + 2] - alreadyTarget.data[line.y * width * 3 + x + 2];
             if (rAvg > 0 || gAvg > 0 || bAvg > 0) {
                 pixelCount++;
             }
@@ -59,9 +59,9 @@ std::pair<double, Color> Energy(const RasterizedLines& lines, const DrawingBoard
     for (int i = 0; i < lines.h; i++) {
         auto line = lines.lines[i];
         for (int x = line.left; x <= line.right; x++) {
-            energy += pow(target[line.y * width * 3 + x] - rAvg - alreadyTarget[line.y * width * 3 + x], 2);
-            energy += pow(target[line.y * width * 3 + x + 1] - gAvg - alreadyTarget[line.y * width * 3 + x + 1], 2);
-            energy += pow(target[line.y * width * 3 + x + 2] - bAvg - alreadyTarget[line.y * width * 3 + x + 2], 2);
+            energy += pow(target.data[line.y * width * 3 + x] - rAvg - alreadyTarget.data[line.y * width * 3 + x], 2);
+            energy += pow(target.data[line.y * width * 3 + x + 1] - gAvg - alreadyTarget.data[line.y * width * 3 + x + 1], 2);
+            energy += pow(target.data[line.y * width * 3 + x + 2] - bAvg - alreadyTarget.data[line.y * width * 3 + x + 2], 2);
         }
     }
     return std::make_pair(sqrt(energy), Color(rAvg, gAvg, bAvg));
@@ -108,8 +108,8 @@ using OptResult = std::pair<double, Line>;
 
 OptResult MinEnergy(const DrawingBoard& board, int workerId)
 {
-    const int width = board.getWidth();
-    const int height = board.getHeight();
+    const int width = board.width;
+    const int height = board.height;
     double minEnergy = INFINITY;
     Line minLine;
     unsigned char avgBlack;

@@ -4,45 +4,18 @@
 using namespace std;
 namespace primitive {
 
-class DrawingBoard {
-private:
+struct DrawingBoard {
+    double score;
     int width { -1 };
     int height { -1 };
-    unsigned char* targetImage { nullptr };
-    unsigned char* board { nullptr };
-
+    Image target;
+    Image current;
+    Color background;
     vector<Line> lines;
-
-public:
-    int getWidth() const
-    {
-        return width;
-    }
-    int getHeight() const
-    {
-        return height;
-    }
-    const unsigned char* getTargetImage() const
-    {
-        return targetImage;
-    }
-    const unsigned char* getBoard() const
-    {
-        return board;
-    }
-
-public:
-    explicit DrawingBoard(int width, int height, const unsigned char* target);
-    explicit DrawingBoard(int width, int height);
-    void SetTargetImage(const unsigned char* target);
+    explicit DrawingBoard(const Image& target ,Color background , int numWorkers);
     void SaveImage(const char* filename)
     {
-        stbi_write_png(filename, width, height, 3, board, width * 3);
-    }
-    ~DrawingBoard()
-    {
-        free(board);
-        free(targetImage);
+        stbi_write_png(filename, width, height, 3, current.data, width * 3);
     }
 
 public:
