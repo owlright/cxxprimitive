@@ -142,30 +142,38 @@ int main()
     std::cout << bg << std::endl;
     const auto processor_count = std::thread::hardware_concurrency();
     printf("This machine has %d processors\n", processor_count);
-    ThreadPool pool(6);
-    DrawingBoard board(width, height, imageData.get());
-    {
+    // ThreadPool pool(6);
+    DrawingBoard board(input, bg, processor_count);
+    int frame = 0;
+    for (int i = 0; i < 10; i++) {
+        frame++;
         Timer _;
-        for (auto lc = 0; lc < 20; lc++) {
-            std::vector<std::future<OptResult>> results;
-            for (auto i = 0; i < processor_count; i++) {
-                auto result = pool.enqueue(MinEnergy, std::ref(board), i);
-                results.push_back(std::move(result));
-            }
-            double minEnergy = INFINITY;
-            Line bestLine;
-            for (auto& result : results) {
-                auto r = result.get();
-                if (r.first < minEnergy) {
-                    minEnergy = r.first;
-                    bestLine = r.second;
-                }
-            }
-            board.DrawLine(bestLine);
-            std::cout << "Round " << lc << " Energy: " << minEnergy << " " << bestLine << std::endl;
-        }
+        board.step();
+
     }
-    board.SaveImage("output.png");
+
+    // {
+    //     Timer _;
+    //     for (auto lc = 0; lc < 20; lc++) {
+    //         std::vector<std::future<OptResult>> results;
+    //         for (auto i = 0; i < processor_count; i++) {
+    //             auto result = pool.enqueue(MinEnergy, std::ref(board), i);
+    //             results.push_back(std::move(result));
+    //         }
+    //         double minEnergy = INFINITY;
+    //         Line bestLine;
+    //         for (auto& result : results) {
+    //             auto r = result.get();
+    //             if (r.first < minEnergy) {
+    //                 minEnergy = r.first;
+    //                 bestLine = r.second;
+    //             }
+    //         }
+    //         board.DrawLine(bestLine);
+    //         std::cout << "Round " << lc << " Energy: " << minEnergy << " " << bestLine << std::endl;
+    //     }
+    // }
+    // board.SaveImage("output.png");
     // {
     //     std::cout << "Not using ThreadPool" << std::endl;
     //     Timer _;

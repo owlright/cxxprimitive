@@ -29,6 +29,12 @@ double differenceFull(const Image& a, const Image& b)
     return sqrt(double(total) / double(w * h * 4)) / 255;
 }
 
+int DrawingBoard::step(int shapeType, int alpha, int repeat)
+{
+    int state = runWorkers(shapeType, alpha, 1000, 100, 16)
+    return 0;
+}
+
 DrawingBoard::DrawingBoard(const Image& target, Color background, int numWorkers)
 {
     this->target = target;

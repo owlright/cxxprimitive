@@ -1,5 +1,6 @@
 #include <vector>
 #include "line.h"
+#include "Worker.h"
 #include "stb_image_write.h"
 using namespace std;
 namespace primitive {
@@ -12,7 +13,10 @@ struct DrawingBoard {
     Image current;
     Color background;
     vector<Line> lines;
-    explicit DrawingBoard(const Image& target ,Color background , int numWorkers);
+    Worker workers;
+    int step(int shapeType, int alpha, int repeat);
+
+    explicit DrawingBoard(const Image& target, Color background, int numWorkers);
     void SaveImage(const char* filename)
     {
         stbi_write_png(filename, width, height, 3, current.data, width * 3);
