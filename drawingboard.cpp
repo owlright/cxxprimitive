@@ -29,9 +29,9 @@ double differenceFull(const Image& a, const Image& b)
     return sqrt(double(total) / double(w * h * 4)) / 255;
 }
 
-int DrawingBoard::step(int shapeType, int alpha, int repeat)
+int DrawingBoard::step(ShapeType shapeType, int alpha, int repeat)
 {
-    int state = runWorkers(shapeType, alpha, 1000, 100, 16)
+    int state = runWorkers(shapeType, alpha, 1000, 100, 16);
     return 0;
 }
 
@@ -49,6 +49,20 @@ DrawingBoard::DrawingBoard(const Image& target, Color background, int numWorkers
     }
     this->score = differenceFull(target, current);
     printf("Initial score: %f\n", score);
+    for (int i = 0; i < numWorkers; i++) {
+        Worker w(&target);
+        // w.W = width;
+        // w.H = height;
+        // w.target = &target;
+        workers.push_back(w);
+    }
+}
+
+State DrawingBoard::runWorkers(ShapeType shapeType, int a, int n, int age, int m)
+{
+    auto wn = this->workers.size();
+    auto wm = m / wn;
+    return State();
 }
 
 void DrawingBoard::DrawLine(const Line& line)
