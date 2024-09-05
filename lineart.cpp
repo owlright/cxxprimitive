@@ -11,6 +11,7 @@
 #include "threadpool.h"
 #include "timer.h"
 #include "drawingboard.h"
+#include "argparse.hpp"
 #include <thread>
 #include <ctime>
 
@@ -129,8 +130,22 @@ OptResult MinEnergy(const DrawingBoard& board, int workerId)
     return std::make_pair(minEnergy, minLine);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    argparse::ArgumentParser program("test");
+
+    program.add_argument("--verbose")
+        .help("increase output verbosity")
+        .default_value(false)
+        .implicit_value(true);
+
+    try {
+        program.parse_args(argc, argv);
+    } catch (const std::exception& err) {
+        std::cerr << err.what() << std::endl;
+        std::cerr << program;
+        std::exit(1);
+    }
     fs::path p = fs::current_path();
     std::cout << "Current path is " << p << std::endl;
     std::string pathStr = p.string();
@@ -148,8 +163,7 @@ int main()
     for (int i = 0; i < 10; i++) {
         frame++;
         Timer _;
-        board.step();
-
+        board.step(ShapeType::Line, 0, 100);
     }
 
     // {
