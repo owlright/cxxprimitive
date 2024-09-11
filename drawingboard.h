@@ -1,11 +1,12 @@
 #include <vector>
 #include "line.h"
 #include "Worker.h"
+#include "state.h"
 #include "stb_image_write.h"
 using namespace std;
 namespace primitive {
 
-using State = int;
+using State = primitive::State;
 
 enum class ShapeType {
     Line,
