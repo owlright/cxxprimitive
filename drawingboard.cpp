@@ -31,7 +31,7 @@ double differenceFull(const Image& a, const Image& b)
 
 int DrawingBoard::step(ShapeType shapeType, int alpha, int repeat)
 {
-    int state = runWorkers(shapeType, alpha, 1000, 100, 16);
+    auto state = runWorkers(shapeType, alpha, 1000, 100, 16);
     return 0;
 }
 
@@ -51,10 +51,7 @@ DrawingBoard::DrawingBoard(const Image& target, Color background, int numWorkers
     printf("Initial score: %f\n", score);
     for (int i = 0; i < numWorkers; i++) {
         Worker w(&target);
-        // w.W = width;
-        // w.H = height;
-        // w.target = &target;
-        workers.push_back(w);
+        workers.push_back(std::move(w));
     }
 }
 

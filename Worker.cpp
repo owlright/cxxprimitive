@@ -12,4 +12,23 @@ Worker::Worker(const Image* target)
     this->rng.seed(seed);
 }
 
+// Move constructor
+Worker::Worker(Worker&& other) noexcept
+    : W(other.W)
+    , H(other.H)
+    , target(other.target)
+    , current(other.current)
+    , buffer(other.buffer)
+    , lines(std::move(other.lines))
+    , counter(other.counter)
+    , score(other.score)
+    , rng(std::move(other.rng))
+{
+    other.target = nullptr;
+    other.current = nullptr;
+    other.buffer = nullptr;
+    other.counter = 0;
+    other.score = 0;
+}
+
 }

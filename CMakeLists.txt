@@ -7,7 +7,7 @@ if(MSVC)
     add_compile_options("/utf-8")
 endif()
 
-add_library(primitive STATIC rasterizer.cpp triangle.cpp line.cpp image.cpp drawingboard.cpp)
+add_library(primitive STATIC rasterizer.cpp triangle.cpp line.cpp image.cpp drawingboard.cpp Worker.cpp)
 
 add_subdirectory(test)
 

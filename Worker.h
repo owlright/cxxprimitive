@@ -21,13 +21,12 @@ struct Worker {
     double score { 0 };
     std::mt19937 rng;
     Worker(const Image* target);
-    // todo: implement move constructor
     // Copy constructor
     const Worker(const Worker& other) = delete;
     // Copy assignment operator
     const Worker& operator=(const Worker& other) = delete;
     // Move constructor
-    Worker(Worker&& other) = delete;
+    Worker(Worker&& other) noexcept;
     // Move assignment operator
     Worker& operator=(Worker&& other) = delete;
 };
