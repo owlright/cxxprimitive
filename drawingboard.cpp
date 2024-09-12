@@ -32,6 +32,7 @@ double differenceFull(const Image& a, const Image& b)
 int DrawingBoard::step(ShapeType shapeType, int alpha, int repeat)
 {
     auto state = runWorkers(shapeType, alpha, 1000, 100, 16);
+    this->add(state.shape, alpha);
     return 0;
 }
 
@@ -79,6 +80,11 @@ void DrawingBoard::DrawLine(const Line& line)
         }
     }
     this->lines.push_back(line);
+}
+
+void DrawingBoard::add(IShape* shape, int alpha)
+{
+    auto lines = shape->Rasterize();
 }
 
 } // namespace primitive

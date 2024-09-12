@@ -31,7 +31,7 @@ struct DrawingBoard {
     vector<Line> lines;
     vector<Worker> workers;
     int step(ShapeType shapeType, int alpha, int repeat);
-
+    void add(IShape* shape, int alpha);
     explicit DrawingBoard(const Image& target, Color background, int numWorkers);
     void SaveImage(const char* filename)
     {
