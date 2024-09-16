@@ -2,6 +2,7 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <future>
 #include "image.h"
 #include "rasterizer.h"
 namespace primitive {
@@ -20,6 +21,11 @@ struct Worker {
     int counter { 0 };
     double score { 0 };
     std::mt19937 rng;
+
+    void init(const Image&, double score);
+
+    std::future<State> run(ShapeType t, int a, int n, int age, int m);
+
     Worker(const Image* target);
     // Copy constructor
     const Worker(const Worker& other) = delete;

@@ -10,6 +10,7 @@ struct State {
     int alpha;
     bool mutateAlpha;
     double score;
+    double energy();
 };
 
 }

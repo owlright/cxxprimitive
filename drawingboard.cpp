@@ -30,10 +30,24 @@ double differenceFull(const Image& a, const Image& b)
     return sqrt(double(total) / double(w * h * 4)) / 255;
 }
 
+void hillClimb(State& state, int maxAge)
+{
+}
+
 int DrawingBoard::step(ShapeType shapeType, int alpha, int repeat)
 {
     auto state = runWorkers(shapeType, alpha, 1000, 100, 16);
     this->add(state.shape, alpha);
+    for (auto i = 0; i < repeat; i++) {
+        state.worker->init(current, this->score);
+        auto a = state.energy();
+        hillClimb(state, 100);
+        auto b = state.energy();
+        if (a == b) {
+            break;
+        }
+        this->add(state.shape, state.alpha);
+    }
     return 0;
 }
 
