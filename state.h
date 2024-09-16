@@ -5,8 +5,8 @@
 namespace primitive {
 
 struct State {
-    Worker* worker;
-    IShape* shape;
+    Worker* worker {nullptr};
+    IShape* shape {nullptr};
     int alpha;
     bool mutateAlpha;
     double score;
