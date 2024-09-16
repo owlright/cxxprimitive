@@ -58,6 +58,7 @@ DrawingBoard::DrawingBoard(const Image& target, Color background, int numWorkers
     this->width = target.width;
     this->height = target.height;
     this->current = Image(background, width, height);
+
     for (int i = 0; i < width * height; i++) {
         current.data[i] = background.r;
         current.data[i + 1] = background.g;
@@ -65,6 +66,7 @@ DrawingBoard::DrawingBoard(const Image& target, Color background, int numWorkers
     }
     this->score = differenceFull(target, current);
     printf("Initial score: %f\n", score);
+    this->threadPool = std::make_shared<ThreadPool>(numWorkers);
     for (int i = 0; i < numWorkers; i++) {
         Worker w(&target);
         workers.push_back(std::move(w));

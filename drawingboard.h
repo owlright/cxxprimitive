@@ -3,23 +3,11 @@
 #include "Worker.h"
 #include "state.h"
 #include "stb_image_write.h"
+#include "threadpool.h"
 using namespace std;
 namespace primitive {
 
 using State = primitive::State;
-
-enum class ShapeType {
-    Line,
-    Triangle,
-    Rectangle,
-    Circle,
-    Ellipse,
-    Polyline,
-    Polygon,
-    Bezier,
-    Arc,
-    ShapeTypeCount
-};
 
 struct DrawingBoard {
     double score;
@@ -30,6 +18,7 @@ struct DrawingBoard {
     Color background;
     vector<Line> lines;
     vector<Worker> workers;
+    std::shared_ptr<ThreadPool> threadPool;
     int step(ShapeType shapeType, int alpha, int repeat);
     void add(IShape* shape, int alpha);
     explicit DrawingBoard(const Image& target, Color background, int numWorkers);

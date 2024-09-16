@@ -1,5 +1,19 @@
 #include "Worker.h"
 namespace primitive {
+std::future<State> Worker::run(ShapeType shape, int a, int n, int age, int m)
+{
+    double bestEnergy;
+    State bestState;
+    for (int i = 0; i < n; i++) {
+        // state := worker.RandomState(t, a)
+        // energy := state.Energy()
+        // if i == 0 || energy < bestEnergy {
+        // 	bestEnergy = energy
+        // 	bestState = state
+        // }
+    }
+    return this->pool->enqueue();
+}
 
 Worker::Worker(const Image* target)
 {
