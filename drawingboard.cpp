@@ -1,5 +1,6 @@
 #include "drawingboard.h"
 #include <cmath>
+#include <future>
 
 namespace primitive {
 
@@ -56,11 +57,30 @@ DrawingBoard::DrawingBoard(const Image& target, Color background, int numWorkers
     }
 }
 
-State DrawingBoard::runWorkers(ShapeType shapeType, int a, int n, int age, int m)
+State DrawingBoard::runWorkers(ShapeType shape, int a, int n, int age, int m)
 {
     auto wn = this->workers.size();
     auto wm = m / wn;
-    return State();
+    if (m % wn != 0) {
+        wm++;
+    }
+    std::vector<std::future<State>> results(wn);
+    for (int i = 0; i < wn; i++) {
+        auto& worker = this->workers[i];
+        worker.init(this->current, this->score);
+        results[i] = worker.run(shape, a, n, age, wm);
+    }
+    double bestEnergy = INFINITY;
+    State bestState;
+    for (int i = 0; i < wn; i++) {
+        auto& result = results[i];
+        auto state = result.get();
+        if (state.energy() < bestEnergy) {
+            bestEnergy = state.energy();
+            bestState = state;
+        }
+    }
+    return bestState;
 }
 
 void DrawingBoard::DrawLine(const Line& line)
